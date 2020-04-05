@@ -4,8 +4,6 @@ import os
 import pandas as pd
 from uszipcode import SearchEngine
 
-
-
 class DataLoader(object):
     
     def __init__(self):
@@ -101,5 +99,8 @@ class DataLoader(object):
         df_zip.rename(columns={0: 'tests', 1: 'positives'}, inplace=True)
         df_zip.index.rename('zip', inplace=True)
         df_zip['zip'] = df_zip.index
+        df_zip['percents'] = df_zip.positives / df_zip.tests
+        df_zip['test_density'] = df_zip.tests / df_zip.tests.max()
+        df_zip['weighted_positivity'] = df_zip.percents * df_zip['test_density']
         df_zip.index = np.arange(len(df_zip))
         return df_zip
