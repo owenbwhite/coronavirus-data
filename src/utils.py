@@ -30,10 +30,12 @@ class DataLoader(object):
 
 
     def fetch_virus_data(self):
+
         virus_ds_path = '../../data/'
         download_root = 'https://raw.githubusercontent.com/nychealth/coronavirus-data/master/'
         endpoints = ['boro.csv','by-age.csv','by-sex.csv', 
                          'case-hosp-death.csv', 'tests-by-zcta.csv']
+
         urls = {"-".join(endpoint.split('.')[:-1]): download_root + endpoint 
                 for endpoint in endpoints}
 
@@ -53,6 +55,7 @@ class DataLoader(object):
         self.dfs = dfs
         self.zip = dfs["tests-by-zcta"]
         self.df_zip = self._process_zip_df()
+        
         return dfs
     
 
@@ -64,6 +67,7 @@ class DataLoader(object):
             zip_code_dict = zipcode.to_dict()
             lat = zip_code_dict['lat']
             lng = zip_code_dict['lng']
+
             return [lat, lng]
         except:
             return [0, 0]    
@@ -97,3 +101,5 @@ class DataLoader(object):
         df_zip.rename(columns={0: 'tests', 1: 'positives'}, inplace=True)
         df_zip.index.rename('zip', inplace=True)
         df_zip['zip'] = df_zip.index
+        df_zip.index = np.arange(len(df_zip))
+        return df_zip
