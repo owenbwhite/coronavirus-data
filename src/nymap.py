@@ -3,10 +3,10 @@ import folium
 class NYMap(object):
     
     def __init__(self):
-        pass
+        self.ny = folium.Map(location=[40.693943, -73.985880], default_zoom_start=15)
         
     def feature_by_zip(self, df_zip, feature):
-        self.ny = folium.Map(location=[40.693943, -73.985880], default_zoom_start=15)
+        
         self.ny.choropleth(geo_data="../../data/nyc-zip-codes.geojson",
             data=df_zip,
             columns=['zip', feature],
