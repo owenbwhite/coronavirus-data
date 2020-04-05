@@ -1,15 +1,18 @@
+from datetime import datetime as dt
 import numpy as np
 import os
 import pandas as pd
 from uszipcode import SearchEngine
 
+
+
 class DataLoader(object):
     
     def __init__(self):
-        self.zip = pd.DataFrame()
-        pass
+        
+        pass        
 
-    def load_dir(self):
+    def load_local_dir(self):
 
         dfs = {}
         path = '../../data/'
@@ -24,6 +27,34 @@ class DataLoader(object):
         self.df_zip = self._process_zip_df()
         
         return dfs
+
+
+    def fetch_virus_data(self):
+        virus_ds_path = '../../data/'
+        download_root = 'https://raw.githubusercontent.com/nychealth/coronavirus-data/master/'
+        endpoints = ['boro.csv','by-age.csv','by-sex.csv', 
+                         'case-hosp-death.csv', 'tests-by-zcta.csv']
+        urls = {"-".join(endpoint.split('.')[:-1]): download_root + endpoint 
+                for endpoint in endpoints}
+
+        date = dt.now().date()
+        date_folder_path = "../../data/" + str(date) + "/"
+        dfs = {k: pd.read_csv(v) 
+               for k, v  in urls.items()}
+
+        if os.path.exists(date_folder_path):
+            [df.to_csv(date_folder_path + k + '.csv') 
+             for k, df  in dfs.items()]
+        else:
+            os.mkdir(date_folder_path)
+            [df.to_csv(date_folder_path + k + '.csv') 
+             for k, df  in dfs.items()]
+
+        self.dfs = dfs
+        self.zip = dfs["tests-by-zcta"]
+        self.df_zip = self._process_zip_df()
+        return dfs
+    
 
     def _get_lat_lng(self, zip_code):
 
@@ -66,4 +97,3 @@ class DataLoader(object):
         df_zip.rename(columns={0: 'tests', 1: 'positives'}, inplace=True)
         df_zip.index.rename('zip', inplace=True)
         df_zip['zip'] = df_zip.index
-        return df_zip
