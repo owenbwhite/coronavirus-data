@@ -15,12 +15,3 @@ class NYMap(object):
             legend_name=f'Total {feature}')    
         return self.ny
 
-
-
-""" Add Marker to Map
-    folium.Marker(
-        location=[lat, lng],
-        popup=f'total: {total}\npositive: {positive}',
-        tooltip = k
-    ).add_to(ny)
-"""
